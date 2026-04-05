@@ -9,76 +9,75 @@ const Gallery = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 
 	const categories = [
-		{ id: "all", label: "All Kitchens" },
+		{ id: "all", label: "All Meals" },
 		{ id: "modern", label: "Modern" },
 		{ id: "classic", label: "Classic" },
-		{ id: "minimalist", label: "Minimalist" },
+		{ id: "comfort", label: "Comfort" },
 	];
 
 	const images = [
 		{
 			src: "/Quick service restaurant interior _ ai generated royalty free stock photo.jpg",
 			category: "modern",
-			alt: "Modern kitchen interior",
-			title: "Sleek Contemporary Kitchen",
+			alt: "Modern dining setup",
+			title: "Sleek Contemporary Restaurant",
 		},
 		{
 			src: "/Air Fryer Whole Tandoori Chicken.jpg",
 			category: "modern",
-			alt: "Modern kitchen with cooking scene",
-			title: "Functional Modern Space",
+			alt: "Tandoori chicken platter",
+			title: "Tandoori Chicken Special",
 		},
 		{
 			src: "/Italian Pot Roast (Stracotto) - Rich & Tender Comfort Dish.jpg",
 			category: "classic",
-			alt: "Classic Italian kitchen",
-			title: "Warm Classic Kitchen",
+			alt: "Pot roast meal",
+			title: "Italian Pot Roast",
 		},
 		{
 			src: "/Nigerian Fried Rice(LAST FOR DAYS!) - KikiFoodies.jpg",
-			category: "modern",
-			alt: "Contemporary Nigerian kitchen",
-			title: "Modern Nigerian Kitchen",
+			category: "comfort",
+			alt: "Fried rice meal",
+			title: "Nigerian Fried Rice",
 		},
 		{
 			src: "/Nigerian Pepper Soup _ TheFamilyCooking.jpg",
-			category: "classic",
-			alt: "Traditional family kitchen",
-			title: "Family Heritage Kitchen",
+			category: "comfort",
+			alt: "Pepper soup meal",
+			title: "Pepper Soup",
 		},
 		{
 			src: "/Tasty Oven Grilled Fish Recipe.jpg",
-			category: "minimalist",
-			alt: "Minimalist oven area",
-			title: "Clean Minimalist Design",
+			category: "classic",
+			alt: "Grilled fish meal",
+			title: "Grilled Fish Dinner",
 		},
 		{
 			src: "/Tendrons de Poulet _Crack_  Ingrédients _ 500 g de….jpg",
 			category: "modern",
-			alt: "Modern French-inspired kitchen",
-			title: "Elegant Modern Kitchen",
+			alt: "Chicken tenders",
+			title: "Crispy Chicken Tenders",
 		},
 		{
 			src: "/Tilapia au Four, Savoureux et Facile à Préparer - Recettes de Cuisine Africaine.jpg",
-			category: "classic",
-			alt: "African inspired kitchen",
-			title: "African Warmth Kitchen",
+			category: "comfort",
+			alt: "Baked tilapia meal",
+			title: "Baked Tilapia",
 		},
 		{
 			src: "/soft food blurred restaurant background.jpg",
-			category: "minimalist",
-			alt: "Minimalist blurred kitchen",
-			title: "Serene Minimal Kitchen",
+			category: "classic",
+			alt: "Restaurant ambience",
+			title: "Cozy Restaurant Space",
 		},
 		{
 			src: "/Beef Burrito Recipe with Cheese and Fresh Toppings.jpg",
 			category: "modern",
-			alt: "Contemporary Mexican kitchen",
-			title: "Vibrant Modern Kitchen",
+			alt: "Burrito meal",
+			title: "Beef Burrito",
 		},
 	];
 
-	// Optimized filtering with useMemo
 	const filteredImages = useMemo(() => {
 		return images.filter((image) => {
 			const matchesCategory =
@@ -91,53 +90,42 @@ const Gallery = () => {
 		});
 	}, [selectedCategory, searchTerm]);
 
-	const clearSearch = () => {
-		setSearchTerm("");
-	};
+	const clearSearch = () => setSearchTerm("");
 
 	return (
 		<div className="min-h-screen bg-gray-50">
 			<Section className="pt-32 pb-20">
-				{/* Hero Header */}
 				<motion.div
 					className="text-center mb-16"
 					initial={{ opacity: 0, y: 30 }}
 					whileInView={{ opacity: 1, y: 0 }}>
 					<h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-amber-600 bg-clip-text text-transparent mb-6 tracking-tight">
-						Our Kitchen Gallery
+						Our Food Gallery
 					</h1>
 					<p className="text-xl text-gray-600 max-w-3xl mx-auto">
-						Discover the beautiful kitchens we've crafted for homes across
-						Nigeria
+						See what’s cooking in our kitchen and pick your next meal.
 					</p>
 				</motion.div>
 
-				{/* Filters & Search */}
 				<div className="flex flex-col lg:flex-row gap-6 items-center justify-between mb-12">
-					{/* Category Filters */}
 					<div className="flex flex-wrap gap-3 justify-center lg:justify-start">
 						{categories.map((cat) => (
 							<button
 								key={cat.id}
 								onClick={() => setSelectedCategory(cat.id)}
-								className={`px-6 py-3 rounded-2xl font-medium transition-all duration-300 text-sm sm:text-base ${
-									selectedCategory === cat.id ?
-										"bg-amber-600 text-white shadow-lg scale-105"
-									:	"bg-white text-gray-700 hover:bg-amber-50 border border-gray-200 hover:border-amber-300"
-								}`}>
+								className={`px-6 py-3 rounded-2xl font-medium transition-all duration-300 text-sm sm:text-base ${selectedCategory === cat.id ? "bg-amber-600 text-white shadow-lg scale-105" : "bg-white text-gray-700 hover:bg-amber-50 border border-gray-200 hover:border-amber-300"}`}>
 								{cat.label}
 							</button>
 						))}
 					</div>
 
-					{/* Search Bar */}
 					<div className="relative w-full max-w-md">
 						<div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
 							<Search className="w-5 h-5" />
 						</div>
 						<input
 							type="text"
-							placeholder="Search by style or description..."
+							placeholder="Search meals, flavors, or cuisine..."
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 							className="w-full pl-12 pr-12 py-4 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:border-amber-500 text-lg placeholder-gray-400"
@@ -152,7 +140,6 @@ const Gallery = () => {
 					</div>
 				</div>
 
-				{/* Gallery Grid */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 					{filteredImages.map((image, index) => (
 						<motion.div
@@ -170,8 +157,6 @@ const Gallery = () => {
 									loading="lazy"
 								/>
 							</div>
-
-							{/* Overlay Info */}
 							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end p-6">
 								<div>
 									<h3 className="text-white font-semibold text-lg mb-1">
@@ -182,8 +167,6 @@ const Gallery = () => {
 									</span>
 								</div>
 							</div>
-
-							{/* Category Badge (always visible) */}
 							<div className="absolute top-4 right-4 px-4 py-1 bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-semibold rounded-full shadow">
 								{image.category}
 							</div>
@@ -191,7 +174,6 @@ const Gallery = () => {
 					))}
 				</div>
 
-				{/* Empty State */}
 				{filteredImages.length === 0 && (
 					<motion.div
 						className="text-center py-24"
@@ -203,7 +185,7 @@ const Gallery = () => {
 								No results found
 							</h3>
 							<p className="text-gray-600 mb-8">
-								We couldn't find any kitchens matching your current filters.
+								No matching meals found. Try another keyword or clear filters.
 							</p>
 							<button
 								onClick={() => {

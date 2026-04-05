@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { Toaster } from "sonner";
 import { CartProvider } from "./contexts/CartContext";
 import { AdminProvider } from "./contexts/AdminContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -22,6 +23,8 @@ import AdminCustomers from "./pages/AdminCustomers";
 import AdminLayout from "./components/AdminLayout";
 import OrderTable from "./components/OrderTable";
 import Button from "./components/Button";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 import "./App.css";
 
 function AppContent() {
@@ -40,6 +43,8 @@ function AppContent() {
 						<Route path="/gallery" element={<Gallery />} />
 						<Route path="/cart" element={<Cart />} />
 						<Route path="/contact" element={<Contact />} />
+						<Route path="/login" element={<Login />} />
+						<Route path="/signup" element={<SignUp />} />
 						<Route path="/admin/login" element={<AdminLogin />} />
 						<Route path="/admin" element={<AdminLayout />}>
 							<Route path="dashboard" element={<AdminDashboard />} />
@@ -75,13 +80,15 @@ function AppContent() {
 
 function App() {
 	return (
-		<CartProvider>
-			<AdminProvider>
-				<Router>
-					<AppContent />
-				</Router>
-			</AdminProvider>
-		</CartProvider>
+		<AuthProvider>
+			<CartProvider>
+				<AdminProvider>
+					<Router>
+						<AppContent />
+					</Router>
+				</AdminProvider>
+			</CartProvider>
+		</AuthProvider>
 	);
 }
 

@@ -8,34 +8,33 @@ const About = () => {
   const whyUs = [
     {
       icon: Users,
-      title: 'Expert Team',
-      description: 'Our talented designers and craftsmen bring over 10 years of specialized kitchen design experience.',
+      title: 'Talented Chefs',
+      description: 'Our kitchen team serves freshly made meals with authentic recipes and premium ingredients.',
       color: 'from-amber-500 to-orange-500',
     },
     {
       icon: Award,
-      title: 'Premium Quality',
-      description: 'We use only the finest materials with industry-leading warranties for lasting beauty and durability.',
+      title: 'Quality Ingredients',
+      description: 'We source the best local and imported produce to deliver flavor, health, and consistency.',
       color: 'from-emerald-500 to-teal-500',
     },
     {
       icon: Heart,
-      title: 'Customer Obsessed',
-      description: 'Your satisfaction is our top priority. We stand behind every kitchen with 100% commitment.',
+      title: 'Customer First',
+      description: 'Your meal satisfaction is guaranteed. Pay online or pay on delivery with confidence.',
       color: 'from-rose-500 to-pink-500',
     },
   ];
 
   const stats = [
-    { number: '5000+', label: 'Projects Completed', icon: Award },
-    { number: '10+', label: 'Years of Excellence', icon: Clock },
-    { number: '98%', label: 'Customer Satisfaction', icon: Heart },
-    { number: '15', label: 'Cities Served', icon: MapPin },
+    { number: '15000+', label: 'Orders Delivered', icon: Award },
+    { number: '12+', label: 'Years of Service', icon: Clock },
+    { number: '97%', label: 'Happy Customers', icon: Heart },
+    { number: '20', label: 'Delivery Zones', icon: MapPin },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
       <Section className="pt-32 pb-24 bg-gradient-to-br from-gray-900 via-gray-800 to-amber-900 text-white">
         <div className="max-w-5xl mx-auto text-center">
           <motion.div
@@ -44,17 +43,15 @@ const About = () => {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-              Crafting Timeless <span className="text-amber-400">Kitchens</span>
+              Crafting Restaurant-Quality Meals
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              For over a decade, UB Kitchens has been turning houses into homes with 
-              beautiful, functional, and lasting kitchen designs.
+              Serving fast, convenient, and delicious food for online and delivery customers.
             </p>
           </motion.div>
         </div>
       </Section>
 
-      {/* Our Story */}
       <Section id="story" className="py-20">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div
@@ -73,26 +70,20 @@ const About = () => {
 
             <Card className="p-10">
               <p className="text-lg text-gray-600 leading-relaxed mb-8">
-                Founded in 2012 with a simple yet powerful vision: to make high-quality, 
-                beautifully designed kitchens accessible to every Nigerian home. 
-                What started as a small workshop has grown into one of the most trusted 
-                kitchen design and installation companies in the country.
+                We started as a small home kitchen with a big goal: to bring restaurant-quality dishes to every doorstep. Today, UB Restaurant serves thousands weekly with online checkout and safe cash-on-delivery options.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Today, with over 5,000 successful projects completed, we continue to push 
-                the boundaries of kitchen innovation while staying true to our core values 
-                of quality, craftsmanship, and customer satisfaction.
+                From local classics to global favorites, our menu changes with the season while keeping the same high standards of taste, hygiene, and delivery speed.
               </p>
             </Card>
 
             <div className="mt-8">
               <Button size="lg" className="text-lg px-10">
-                Learn Our Full Journey
+                Explore the Full Menu
               </Button>
             </div>
           </motion.div>
 
-          {/* Stats Grid */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -100,7 +91,7 @@ const About = () => {
           >
             {stats.map((stat, index) => (
               <motion.div
-                key={index}
+                key={stat.label}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -117,14 +108,13 @@ const About = () => {
         </div>
       </Section>
 
-      {/* Why Choose Us */}
       <Section id="mission" className="bg-white py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Why Families Choose UB Kitchens
+            Why Customers Choose UB Restaurant
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            We don’t just build kitchens — we create spaces where memories are made.
+            We don’t just feed you — we make your meal moments memorable. Online payment, cash on delivery, and 7-day customer support.
           </p>
         </div>
 
