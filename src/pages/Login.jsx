@@ -1,34 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import Card from "../components/Card";
 import Button from "../components/Button";
-import { useAuth } from "../contexts/AuthContext";
 
 export default function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [loading, setLoading] = useState(false);
-	const { login } = useAuth();
-	const navigate = useNavigate();
-
-	const handleSubmit = async (event) => {
-		event.preventDefault();
-		setLoading(true);
-
-		try {
-			await login(email, password);
-			toast.success("Logged in successfully");
-			navigate("/");
-		} catch (error) {
-			toast.error(
-				error.message || "Unable to log in. Please check your credentials.",
-			);
-		} finally {
-			setLoading(false);
-		}
-	};
-
 	return (
 		<main className="min-h-[calc(100vh-220px)] flex items-center justify-center py-16 px-4">
 			<Card className="w-full max-w-xl">
@@ -39,7 +16,7 @@ export default function Login() {
 					</p>
 				</div>
 
-				<form className="space-y-6" onSubmit={handleSubmit}>
+				<form className="space-y-6">
 					<div>
 						<label
 							htmlFor="email"
@@ -52,7 +29,6 @@ export default function Login() {
 							required
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
-							placeholder="you@example.com"
 							className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-gray-900 focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none"
 						/>
 					</div>
@@ -69,13 +45,12 @@ export default function Login() {
 							required
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
-							placeholder="Enter your password"
 							className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-gray-900 focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none"
 						/>
 					</div>
 
-					<Button type="submit" className="w-full" disabled={loading}>
-						{loading ? "Signing in..." : "Sign In"}
+					<Button type="submit" className="w-full cursor-pointer">
+						Sign In
 					</Button>
 				</form>
 

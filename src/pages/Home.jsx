@@ -136,7 +136,7 @@ const Home = () => {
 					<h3 className="text-4xl font-bold text-gray-900 mb-4">
 						Popular Meals This Week
 					</h3>
-					<p className="text-lg text-gray-600">
+					<p className="text-lg text-gray-600"> 
 						Chef-prepared • Fresh ingredients • Fast delivery
 					</p>
 				</div>

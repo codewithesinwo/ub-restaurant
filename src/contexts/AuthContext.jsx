@@ -1,80 +1,80 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import api from "../api";
+// import { createContext, useContext, useState, useEffect } from "react";
+// import api from "../api";
 
-const AuthContext = createContext();
+// const AuthContext = createContext();
 
-export const useAuth = () => {
-	const context = useContext(AuthContext);
-	if (!context) {
-		throw new Error("useAuth must be used within an AuthProvider");
-	}
-	return context;
-};
+// export const useAuth = () => {
+// 	const context = useContext(AuthContext);
+// 	if (!context) {
+// 		throw new Error("useAuth must be used within an AuthProvider");
+// 	}
+// 	return context;
+// };
 
-export const AuthProvider = ({ children }) => {
-	const [user, setUser] = useState(null);
-	const [loading, setLoading] = useState(true);
+// export const AuthProvider = ({ children }) => {
+// 	const [user, setUser] = useState(null);
+// 	const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		const token = localStorage.getItem("token");
-		const savedUser = localStorage.getItem("user");
+// 	useEffect(() => {
+// 		const token = localStorage.getItem("token");
+// 		const savedUser = localStorage.getItem("user");
 
-		if (token && savedUser) {
-			try {
-				setUser(JSON.parse(savedUser));
-			} catch (error) {
-				console.error("Failed to parse stored user:", error);
-				localStorage.removeItem("token");
-				localStorage.removeItem("user");
-			}
-		}
-		setLoading(false);
-	}, []);
+// 		if (token && savedUser) {
+// 			try {
+// 				setUser(JSON.parse(savedUser));
+// 			} catch (error) {
+// 				console.error("Failed to parse stored user:", error);
+// 				localStorage.removeItem("token");
+// 				localStorage.removeItem("user");
+// 			}
+// 		}
+// 		setLoading(false);
+// 	}, []);
 
-	const login = async (email, password) => {
-		try {
-			const data = await api.login({ email, password });
+// 	const login = async (email, password) => {
+// 		try {
+// 			const data = await api.login({ email, password });
 
-			localStorage.setItem("token", data.token);
-			localStorage.setItem("user", JSON.stringify(data.user));
-			setUser(data.user);
+// 			localStorage.setItem("token", data.token);
+// 			localStorage.setItem("user", JSON.stringify(data.user));
+// 			setUser(data.user);
 
-			return data.user;
-		} catch (error) {
-			console.error("Login error:", error);
-			throw error;
-		}
-	};
+// 			return data.user;
+// 		} catch (error) {
+// 			console.error("Login error:", error);
+// 			throw error;
+// 		}
+// 	};
 
-	const logout = () => {
-		localStorage.removeItem("token");
-		localStorage.removeItem("user");
-		setUser(null);
-	};
+// 	const logout = () => {
+// 		localStorage.removeItem("token");
+// 		localStorage.removeItem("user");
+// 		setUser(null);
+// 	};
 
-	const register = async (userData) => {
-		try {
-			const data = await api.register(userData);
+// 	const register = async (userData) => {
+// 		try {
+// 			const data = await api.register(userData);
 
-			localStorage.setItem("token", data.token);
-			localStorage.setItem("user", JSON.stringify(data.user));
-			setUser(data.user);
+// 			localStorage.setItem("token", data.token);
+// 			localStorage.setItem("user", JSON.stringify(data.user));
+// 			setUser(data.user);
 
-			return data.user;
-		} catch (error) {
-			console.error("Registration error:", error);
-			throw error;
-		}
-	};
+// 			return data.user;
+// 		} catch (error) {
+// 			console.error("Registration error:", error);
+// 			throw error;
+// 		}
+// 	};
 
-	const value = {
-		user,
-		loading,
-		login,
-		logout,
-		register,
-		isAuthenticated: !!user,
-	};
+// 	const value = {
+// 		user,
+// 		loading,
+// 		login,
+// 		logout,
+// 		register,
+// 		isAuthenticated: !!user,
+// 	};
 
-	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+// 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+// };
