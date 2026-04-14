@@ -4,6 +4,7 @@ import { Menu, X, ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "../contexts/CartContext";
 import { useAdmin } from "../contexts/AdminContext";
+import UbLogo from "/ubrestaurantlogo.png";
 
 const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -13,8 +14,8 @@ const Navbar = () => {
 
 	const navLinks = [
 		{ name: "Home", path: "/" },
-		{ name: "About", path: "/about" },
 		{ name: "Menu", path: "/services" },
+		{ name: "About", path: "/about" },
 		{ name: "Gallery", path: "/gallery" },
 		{ name: "Contact", path: "/contact" },
 		...(isAdmin ? [{ name: "Admin", path: "/admin/dashboard" }] : []),
@@ -36,7 +37,7 @@ const Navbar = () => {
 						<Link
 							to="/"
 							className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
-							UB Restaurant
+							<img src={UbLogo} alt="UB Kitchen Logo" className="h-10 w-auto" />
 						</Link>
 					</div>
 

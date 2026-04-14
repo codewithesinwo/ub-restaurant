@@ -21,8 +21,7 @@ const Hero = () => {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8 }}
 					className="max-w-4xl mx-auto">
-					
-					<motion.span 
+					<motion.span
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={{ delay: 0.1 }}
@@ -43,12 +42,12 @@ const Hero = () => {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.4, duration: 0.8 }}>
-						From farm-to-table freshness to artisanal craft cocktails. 
-						Join us for an unforgettable culinary journey tonight.
+						From farm-to-table freshness to artisanal craft cocktails. Join us
+						for an unforgettable culinary journey tonight.
 					</motion.p>
 
 					{/* Restaurant Specific CTAs */}
-					<motion.div 
+					<motion.div
 						className="flex flex-col sm:flex-row gap-4 justify-center items-center"
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -57,7 +56,9 @@ const Hero = () => {
 							<Utensils size={20} />
 							View Our Menu
 						</Button>
-						<Button variant="outline" className="border-white text-white hover:bg-white hover:text-black px-8 py-4 rounded-full flex items-center gap-2 transition-all">
+						<Button
+							variant="outline"
+							className="border-white text-white hover:bg-white hover:text-black px-8 py-4 rounded-full flex items-center gap-2 transition-all">
 							<Calendar size={20} />
 							Book a Table
 						</Button>
