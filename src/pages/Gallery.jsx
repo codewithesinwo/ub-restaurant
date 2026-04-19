@@ -103,7 +103,7 @@ const Gallery = () => {
 						Our Food Gallery
 					</h1>
 					<p className="text-xl text-gray-600 max-w-3xl mx-auto">
-						See what’s cooking in our kitchen and pick your next meal.
+						See what’s cooking in our Restaurant and pick your next meal.
 					</p>
 				</motion.div>
 

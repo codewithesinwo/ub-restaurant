@@ -16,8 +16,8 @@ const AdminLogin = () => {
     setLoading(true);
     // Mock login
     await new Promise(r => setTimeout(r, 1500));
-    if (email === 'admin@ubkitchen.com' && password === 'admin123') {
-      localStorage.setItem('ubkitchen-admin', 'true');
+    if (email === 'admin@ubrestaurant.com' && password === 'admin123') {
+      localStorage.setItem('ubrestaurant-admin', 'true');
       toast.success('Welcome back, Admin!');
       navigate('/admin/dashboard');
     } else {
@@ -54,7 +54,7 @@ const AdminLogin = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 bg-white/50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-amber-200 focus:border-amber-500 transition-all text-lg placeholder-gray-500"
-                  placeholder="admin@ubkitchen.com"
+                  placeholder="admin@ubrestaurant.com"
                   required
                 />
               </div>
@@ -94,7 +94,7 @@ const AdminLogin = () => {
           </div>
 
           <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-sm text-amber-800">
-            <p>Demo: <strong>admin@ubkitchen.com</strong> / <strong>admin123</strong></p>
+            <p>Demo: <strong>admin@ubrestaurant.com</strong> / <strong>admin123</strong></p>
           </div>
         </div>
       </motion.div>

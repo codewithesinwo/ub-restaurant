@@ -43,7 +43,7 @@ export const AdminProvider = ({ children }) => {
 	});
 
 	useEffect(() => {
-		const isAdmin = localStorage.getItem("ubkitchen-admin") === "true";
+		const isAdmin = localStorage.getItem("ubrestaurant-admin") === "true";
 
 		const loadData = async () => {
 			try {
@@ -88,7 +88,7 @@ export const AdminProvider = ({ children }) => {
 		}
 	};
 
-	const isAdmin = localStorage.getItem("ubkitchen-admin") === "true";
+	const isAdmin = localStorage.getItem("ubrestaurant-admin") === "true";
 
 	return (
 		<AdminContext.Provider

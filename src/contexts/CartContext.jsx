@@ -78,14 +78,14 @@ export const CartProvider = ({ children }) => {
 	// Load cart from localStorage on mount
 	useEffect(() => {
 		try {
-			const savedCart = localStorage.getItem("ubkitchen-cart");
+			const savedCart = localStorage.getItem("ubrestaurant-cart");
 			if (savedCart) {
 				const parsedCart = JSON.parse(savedCart);
 				dispatch({ type: "SET_CART", payload: parsedCart });
 			}
 		} catch (error) {
 			console.error("Failed to load cart from localStorage:", error);
-			localStorage.removeItem("ubkitchen-cart");
+			localStorage.removeItem("ubrestaurant-cart");
 		}
 	}, []);
 
@@ -99,7 +99,7 @@ export const CartProvider = ({ children }) => {
 
 		// Save to localStorage
 		try {
-			localStorage.setItem("ubkitchen-cart", JSON.stringify(updatedState));
+			localStorage.setItem("ubrestaurant-cart", JSON.stringify(updatedState));
 		} catch (error) {
 			console.error("Failed to save cart to localStorage:", error);
 		}
@@ -135,7 +135,7 @@ export const CartProvider = ({ children }) => {
 
 	const clearCart = useCallback(() => {
 		dispatch({ type: "CLEAR_CART" });
-		localStorage.removeItem("ubkitchen-cart");
+		localStorage.removeItem("ubrestaurant-cart");
 	}, []);
 
 	const value = {

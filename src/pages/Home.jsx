@@ -46,7 +46,7 @@ const Home = () => {
 		},
 		{
 			quote:
-				"Best pepper soup and pounded yam I've had delivered. UB Kitchens is now my go-to!",
+				"Best pepper soup and pounded yam I've had delivered. UB Restaurants is now my go-to!",
 			author: "Chinedu Okoro",
 			location: "Ikoyi, Lagos",
 		},
@@ -131,12 +131,12 @@ const Home = () => {
 			</Section>
 
 			{/* Featured Meals */}
-			<Section className="bg-gradient-to-b from-amber-50 to-white py-20">
+			<Section className=" from-amber-50 to-white py-20">
 				<div className="text-center mb-16">
 					<h3 className="text-4xl font-bold text-gray-900 mb-4">
 						Popular Meals This Week
 					</h3>
-					<p className="text-lg text-gray-600"> 
+					<p className="text-lg text-gray-600">
 						Chef-prepared • Fresh ingredients • Fast delivery
 					</p>
 				</div>

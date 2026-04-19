@@ -37,7 +37,11 @@ const Navbar = () => {
 						<Link
 							to="/"
 							className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
-							<img src={UbLogo} alt="UB Kitchen Logo" className="h-10 w-auto" />
+							<img
+								src={UbLogo}
+								alt="UB Restaurant Logo"
+								className="h-10 w-auto"
+							/>
 						</Link>
 					</div>
 

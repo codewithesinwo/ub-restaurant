@@ -42,7 +42,7 @@ const Cart = () => {
 		try {
 			if (paymentMode === "online") {
 				// Initialize Paystack payment
-				const timestamp = Date.now(); 
+				const timestamp = Date.now();
 				const paymentData = {
 					email: customerEmail,
 					amount: total,
@@ -149,7 +149,7 @@ const Cart = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-50 py-20 px-4">
-			<Toaster position="top-center" richColors />
+			{/* <Toaster position="top-center" richColors /> */}
 
 			<div className="max-w-6xl mx-auto">
 				<div className="flex items-center gap-4 mb-10">
@@ -207,7 +207,6 @@ const Cart = () => {
 									value={customerName}
 									onChange={(e) => setCustomerName(e.target.value)}
 									className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition-all"
-									placeholder="John Adebayo"
 								/>
 							</div>
 
@@ -220,7 +219,6 @@ const Cart = () => {
 									value={customerEmail}
 									onChange={(e) => setCustomerEmail(e.target.value)}
 									className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition-all"
-									placeholder="john@example.com"
 								/>
 							</div>
 

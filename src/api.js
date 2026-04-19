@@ -46,6 +46,7 @@ export const api = {
 	// Products
 	getProducts: async () => {
 		const result = await apiCall("/products");
+		console.log(result);
 		return result.data || result;
 	},
 

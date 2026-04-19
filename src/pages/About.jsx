@@ -9,7 +9,7 @@ const About = () => {
     {
       icon: Users,
       title: 'Talented Chefs',
-      description: 'Our kitchen team serves freshly made meals with authentic recipes and premium ingredients.',
+      description: 'Our Restaurant team serves freshly made meals with authentic recipes and premium ingredients.',
       color: 'from-amber-500 to-orange-500',
     },
     {
@@ -70,7 +70,7 @@ const About = () => {
 
             <Card className="p-10">
               <p className="text-lg text-gray-600 leading-relaxed mb-8">
-                We started as a small home kitchen with a big goal: to bring restaurant-quality dishes to every doorstep. Today, UB Restaurant serves thousands weekly with online checkout and safe cash-on-delivery options.
+                We started as a small home Restaurant with a big goal: to bring restaurant-quality dishes to every doorstep. Today, UB Restaurant serves thousands weekly with online checkout and safe cash-on-delivery options.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed">
                 From local classics to global favorites, our menu changes with the season while keeping the same high standards of taste, hygiene, and delivery speed.

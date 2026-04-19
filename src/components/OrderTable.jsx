@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import StatusBadge from "./StatusBadge";
+// import StatusBadge from "./StatusBadge";
 import { Search, Filter, ChevronDown, Package } from "lucide-react";
 import { useAdmin } from "../contexts/AdminContext";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 const OrderTable = () => {
 	const { orders, updateOrderStatus } = useAdmin();
