@@ -1,13 +1,14 @@
-import Hero from "../components/Hero";
-import Section from "../components/Section";
-import Card from "../components/Card";
-import Button from "../components/Button";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FaStar, FaShoppingCart } from "react-icons/fa";
-import { useCart } from "../contexts/CartContext";
+import { FaShoppingCart, FaStar } from "react-icons/fa";
 import { toast } from "sonner";
 import { api } from "../api";
-import { useState, useEffect } from "react";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import Hero from "../components/Hero";
+import Section from "../components/Section";
+import { formatCurrency } from "../components/utils";
+import { useCart } from "../contexts/CartContext";
 
 const Home = () => {
 	const { addItem } = useCart();
@@ -15,7 +16,6 @@ const Home = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
-	// Highlights with Images (Food Ordering Style)
 	const highlights = [
 		{
 			image:
@@ -57,17 +57,17 @@ const Home = () => {
 			try {
 				setLoading(true);
 				const data = await api.getProducts();
-				const homeProducts = data
-					.filter((p) => p.category === "product")
-					.slice(0, 4);
+				const menuItems = data.filter((product) => product.category === "product");
+				const homeProducts = (menuItems.length ? menuItems : data).slice(0, 4);
 				setProducts(homeProducts);
-			} catch (err) {
+			} catch {
 				setError("Failed to load meals");
 				toast.error("Failed to load meals");
 			} finally {
 				setLoading(false);
 			}
 		};
+
 		fetchProducts();
 	}, []);
 
@@ -88,7 +88,6 @@ const Home = () => {
 		<div>
 			<Hero />
 
-			{/* Why People Love Ordering From Us - With Images */}
 			<Section className="py-20 bg-white">
 				<motion.div className="text-center mb-16">
 					<h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -102,7 +101,7 @@ const Home = () => {
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 					{highlights.map((item, index) => (
 						<motion.div
-							key={index}
+							key={item.title}
 							initial={{ opacity: 0, y: 40 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ delay: index * 0.1 }}>
@@ -130,14 +129,13 @@ const Home = () => {
 				</div>
 			</Section>
 
-			{/* Featured Meals */}
-			<Section className=" from-amber-50 to-white py-20">
+			<Section className="from-amber-50 to-white py-20">
 				<div className="text-center mb-16">
 					<h3 className="text-4xl font-bold text-gray-900 mb-4">
 						Popular Meals This Week
 					</h3>
 					<p className="text-lg text-gray-600">
-						Chef-prepared • Fresh ingredients • Fast delivery
+						Chef-prepared | Fresh ingredients | Fast delivery
 					</p>
 				</div>
 
@@ -146,7 +144,7 @@ const Home = () => {
 				:	<div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
 						{products.map((product, index) => (
 							<motion.div
-								key={product.id}
+								key={product.id || product._id || product.title}
 								initial={{ opacity: 0, y: 30 }}
 								whileInView={{ opacity: 1, y: 0 }}
 								transition={{ delay: index * 0.1 }}
@@ -158,7 +156,7 @@ const Home = () => {
 										className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 									/>
 									<div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 px-4 py-1 rounded-2xl text-sm font-bold">
-										₦{product.price?.toLocaleString()}
+										{formatCurrency(product.price)}
 									</div>
 								</div>
 
@@ -186,7 +184,6 @@ const Home = () => {
 				</div>
 			</Section>
 
-			{/* Testimonials */}
 			<Section id="testimonials" className="py-20 bg-white">
 				<motion.div className="text-center mb-16">
 					<h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -197,18 +194,18 @@ const Home = () => {
 				<div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
 					{testimonials.map((testimonial, index) => (
 						<motion.div
-							key={index}
+							key={testimonial.author}
 							initial={{ opacity: 0, y: 30 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ delay: index * 0.15 }}>
 							<Card className="h-full p-10">
 								<div className="flex mb-6">
-									{[...Array(5)].map((_, i) => (
+									{Array.from({ length: 5 }).map((_, i) => (
 										<FaStar key={i} className="text-amber-500 w-6 h-6" />
 									))}
 								</div>
 								<p className="text-lg text-gray-700 italic leading-relaxed mb-8">
-									"{testimonial.quote}"
+									&ldquo;{testimonial.quote}&rdquo;
 								</p>
 								<div>
 									<p className="font-semibold text-gray-900">
@@ -224,7 +221,6 @@ const Home = () => {
 				</div>
 			</Section>
 
-			{/* Final CTA */}
 			<Section className="bg-gradient-to-br from-gray-900 to-black text-white py-24">
 				<div className="text-center max-w-3xl mx-auto">
 					<motion.h2
@@ -234,7 +230,7 @@ const Home = () => {
 						Craving Something Delicious?
 					</motion.h2>
 					<p className="text-xl text-gray-300 mb-10">
-						Order now and get it delivered hot & fresh
+						Order now and get it delivered hot and fresh
 					</p>
 					<Button
 						size="lg"
@@ -242,7 +238,7 @@ const Home = () => {
 						className="text-xl px-14 py-7"
 						asLink
 						to="/services">
-						Browse Menu & Order Now
+						Browse Menu and Order Now
 					</Button>
 				</div>
 			</Section>

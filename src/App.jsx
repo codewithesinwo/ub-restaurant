@@ -8,7 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { Toaster } from "sonner";
 import { CartProvider } from "./contexts/CartContext";
 import { AdminProvider } from "./contexts/AdminContext";
-// import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -80,15 +80,15 @@ function AppContent() {
 
 function App() {
 	return (
-		// <AuthProvider>
-		<CartProvider>
-			<AdminProvider>
-				<Router>
-					<AppContent />
-				</Router>
-			</AdminProvider>
-		</CartProvider>
-		// </AuthProvider>
+		<AuthProvider>
+			<CartProvider>
+				<AdminProvider>
+					<Router>
+						<AppContent />
+					</Router>
+				</AdminProvider>
+			</CartProvider>
+		</AuthProvider>
 	);
 }
 

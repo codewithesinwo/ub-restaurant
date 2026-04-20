@@ -7,8 +7,10 @@ const Button = ({
 	className = "",
 	variant = "primary",
 	size = "md",
+	as,
 	asLink,
 	to,
+	href,
 	...props
 }) => {
 	const baseStyles =
@@ -30,20 +32,18 @@ const Button = ({
 	};
 
 	const combinedClassName = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
+	const linkTarget = to ?? href;
 
-	if (asLink && to) {
+	if ((asLink || as === "link") && linkTarget) {
 		return (
-			<motion.div
-				className={combinedClassName}
-				whileHover={{ scale: 1.05 }}
-				whileTap={{ scale: 0.95 }}>
-				<Link
-					to={to}
-					className="block w-full h-full flex items-center justify-center"
-					{...props}>
+			<Link to={linkTarget} {...props}>
+				<motion.span
+					className={combinedClassName}
+					whileHover={{ scale: 1.05 }}
+					whileTap={{ scale: 0.95 }}>
 					{children}
-				</Link>
-			</motion.div>
+				</motion.span>
+			</Link>
 		);
 	}
 

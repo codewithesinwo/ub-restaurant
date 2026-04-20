@@ -1,11 +1,31 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import Card from "../components/Card";
 import Button from "../components/Button";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Login() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [loading, setLoading] = useState(false);
+	const { login } = useAuth();
+	const navigate = useNavigate();
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		setLoading(true);
+
+		try {
+			await login(email, password);
+			toast.success("Login successful!");
+			navigate("/");
+		} catch (error) {
+			toast.error(error.message || "Login failed");
+		} finally {
+			setLoading(false);
+		}
+	};
 	return (
 		<main className="min-h-[calc(100vh-220px)] flex items-center justify-center py-16 px-4">
 			<Card className="w-full max-w-xl">
@@ -16,7 +36,7 @@ export default function Login() {
 					</p>
 				</div>
 
-				<form className="space-y-6">
+				<form className="space-y-6" onSubmit={handleSubmit}>
 					<div>
 						<label
 							htmlFor="email"
@@ -49,8 +69,11 @@ export default function Login() {
 						/>
 					</div>
 
-					<Button type="submit" className="w-full cursor-pointer">
-						Sign In
+					<Button
+						type="submit"
+						className="w-full cursor-pointer"
+						disabled={loading}>
+						{loading ? "Signing In..." : "Sign In"}
 					</Button>
 				</form>
 

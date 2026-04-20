@@ -1,16 +1,35 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, ShoppingCart, User, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "../contexts/CartContext";
 import { useAdmin } from "../contexts/AdminContext";
+import { useAuth } from "../contexts/AuthContext";
 import UbLogo from "/ubrestaurantlogo.png";
 
 const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false);
+	const [showProfileMenu, setShowProfileMenu] = useState(false);
+	const profileMenuRef = useRef(null);
 	const location = useLocation();
+	const navigate = useNavigate();
 	const { items } = useCart();
 	const { isAdmin } = useAdmin();
+	const { user, logout, isAuthenticated } = useAuth();
+
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (
+				profileMenuRef.current &&
+				!profileMenuRef.current.contains(event.target)
+			) {
+				setShowProfileMenu(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
 
 	const navLinks = [
 		{ name: "Home", path: "/" },
@@ -25,6 +44,12 @@ const Navbar = () => {
 		{ name: "Login", path: "/login" },
 		{ name: "Sign Up", path: "/signup" },
 	];
+
+	const handleLogout = () => {
+		logout();
+		setShowProfileMenu(false);
+		navigate("/");
+	};
 
 	return (
 		<motion.nav
@@ -72,20 +97,49 @@ const Navbar = () => {
 							)}
 						</Link>
 
-						<div className="hidden md:flex items-center gap-2">
-							{authLinks.map((link) => (
-								<Link
-									key={link.path}
-									to={link.path}
-									className={`px-5 py-2 text-sm font-medium rounded-xl transition-all ${
-										location.pathname === link.path ?
-											"bg-amber-600 text-white"
-										:	"text-gray-700 hover:bg-gray-100 border border-gray-300 hover:border-gray-400"
-									}`}>
-									{link.name}
-								</Link>
-							))}
-						</div>
+						{isAuthenticated ?
+							<div className="relative" ref={profileMenuRef}>
+								<button
+									onClick={() => setShowProfileMenu(!showProfileMenu)}
+									className="flex items-center gap-2 p-2 rounded-xl hover:bg-amber-50 transition-all">
+									<User className="w-6 h-6 text-gray-700" />
+									<span className="hidden md:block text-sm font-medium text-gray-700">
+										Profile
+									</span>
+								</button>
+
+								{showProfileMenu && (
+									<motion.div
+										initial={{ opacity: 0, y: -10 }}
+										animate={{ opacity: 1, y: 0 }}
+										className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+										<div className="px-4 py-2 border-b border-gray-100">
+											<p className="text-sm text-gray-700">{user?.email}</p>
+										</div>
+										<button
+											onClick={handleLogout}
+											className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+											<LogOut className="w-4 h-4" />
+											Logout
+										</button>
+									</motion.div>
+								)}
+							</div>
+						:	<div className="hidden md:flex items-center gap-2">
+								{authLinks.map((link) => (
+									<Link
+										key={link.path}
+										to={link.path}
+										className={`px-5 py-2 text-sm font-medium rounded-xl transition-all ${
+											location.pathname === link.path ?
+												"bg-amber-600 text-white"
+											:	"text-gray-700 hover:bg-gray-100 border border-gray-300 hover:border-gray-400"
+										}`}>
+										{link.name}
+									</Link>
+								))}
+							</div>
+						}
 
 						<div className="md:hidden">
 							<button
@@ -122,21 +176,39 @@ const Navbar = () => {
 
 						<div className="border-t my-4" />
 
-						<div className="space-y-2 pt-2">
-							{authLinks.map((link) => (
-								<Link
-									key={link.path}
-									to={link.path}
-									className={`block py-3 px-4 rounded-xl text-base font-medium text-center ${
-										location.pathname === link.path ?
-											"bg-amber-600 text-white"
-										:	"border border-gray-300 text-gray-700 hover:bg-gray-50"
-									}`}
-									onClick={() => setIsOpen(false)}>
-									{link.name}
-								</Link>
-							))}
-						</div>
+						{isAuthenticated ?
+							<div className="space-y-2 pt-2">
+								<div className="px-4 py-2 bg-gray-50 rounded-xl">
+									<p className="text-sm text-gray-700 font-medium">
+										{user?.email}
+									</p>
+								</div>
+								<button
+									onClick={() => {
+										handleLogout();
+										setIsOpen(false);
+									}}
+									className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:bg-gray-50">
+									<LogOut className="w-5 h-5" />
+									Logout
+								</button>
+							</div>
+						:	<div className="space-y-2 pt-2">
+								{authLinks.map((link) => (
+									<Link
+										key={link.path}
+										to={link.path}
+										className={`block py-3 px-4 rounded-xl text-base font-medium text-center ${
+											location.pathname === link.path ?
+												"bg-amber-600 text-white"
+											:	"border border-gray-300 text-gray-700 hover:bg-gray-50"
+										}`}
+										onClick={() => setIsOpen(false)}>
+										{link.name}
+									</Link>
+								))}
+							</div>
+						}
 					</div>
 				</motion.div>
 			)}

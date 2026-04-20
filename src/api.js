@@ -1,5 +1,43 @@
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+const unwrapPayload = (result, fallbackKeys = []) => {
+	if (result == null) {
+		return result;
+	}
+
+	if (Array.isArray(result)) {
+		return result;
+	}
+
+	if (result.data != null) {
+		return result.data;
+	}
+
+	for (const key of fallbackKeys) {
+		if (result[key] != null) {
+			return result[key];
+		}
+	}
+
+	return result;
+};
+
+const unwrapArray = (result, fallbackKeys = []) => {
+	const payload = unwrapPayload(result, fallbackKeys);
+	return Array.isArray(payload) ? payload : [];
+};
+
+const normalizeAuthResponse = (result) => {
+	const payload = unwrapPayload(result);
+
+	return {
+		...result,
+		...(payload && typeof payload === "object" ? payload : {}),
+		token: result?.token ?? payload?.token,
+		user: result?.user ?? payload?.user ?? payload,
+	};
+};
+
 const apiCall = async (endpoint, options = {}) => {
 	try {
 		const token = localStorage.getItem("token");
@@ -46,40 +84,51 @@ export const api = {
 	// Products
 	getProducts: async () => {
 		const result = await apiCall("/products");
-		console.log(result);
-		return result.data || result;
+		return unwrapArray(result, ["products", "items"]);
 	},
 
 	// Orders
-	getOrders: () => apiCall("/orders"), // Admin - all orders
-	getMyOrders: () => apiCall("/orders/my"), // User - their own orders
-	createOrder: (orderData) =>
-		apiCall("/orders", {
-			method: "POST",
-			body: JSON.stringify(orderData),
-		}),
-	updateOrderStatus: (id, status) =>
-		apiCall(`/orders/${id}`, {
-			method: "PATCH",
-			body: JSON.stringify({ status }),
-		}),
+	getOrders: async () => unwrapArray(await apiCall("/orders"), ["orders"]), // Admin - all orders
+	getMyOrders: async () =>
+		unwrapArray(await apiCall("/orders/my"), ["orders"]), // User - their own orders
+	createOrder: async (orderData) =>
+		unwrapPayload(
+			await apiCall("/orders", {
+				method: "POST",
+				body: JSON.stringify(orderData),
+			}),
+			["order"],
+		),
+	updateOrderStatus: async (id, status) =>
+		unwrapPayload(
+			await apiCall(`/orders/${id}`, {
+				method: "PATCH",
+				body: JSON.stringify({ status }),
+			}),
+			["order"],
+		),
 
 	// Users / Customers
-	getCustomers: () => apiCall("/users/customers"), // Admin only
-	getMe: () => apiCall("/users/me"), // Current user profile
+	getCustomers: async () =>
+		unwrapArray(await apiCall("/users/customers"), ["customers", "users"]), // Admin only
+	getMe: async () => unwrapPayload(await apiCall("/users/me"), ["user"]), // Current user profile
 
 	// Auth
-	login: (credentials) =>
-		apiCall("/auth/login", {
-			method: "POST",
-			body: JSON.stringify(credentials),
-		}),
+	login: async (credentials) =>
+		normalizeAuthResponse(
+			await apiCall("/auth/login", {
+				method: "POST",
+				body: JSON.stringify(credentials),
+			}),
+		),
 
-	register: (userData) =>
-		apiCall("/auth/signup", {
-			method: "POST",
-			body: JSON.stringify(userData),
-		}),
+	register: async (userData) =>
+		normalizeAuthResponse(
+			await apiCall("/auth/signup", {
+				method: "POST",
+				body: JSON.stringify(userData),
+			}),
+		),
 
 	// Payment
 	initializePayment: (paymentData) =>

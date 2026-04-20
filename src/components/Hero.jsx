@@ -52,15 +52,20 @@ const Hero = () => {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.6, duration: 0.8 }}>
-						<Button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-full flex items-center gap-2 transition-all">
+						<Button
+							asLink
+							to="/services"
+							className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-full flex items-center gap-2 transition-all">
 							<Utensils size={20} />
 							View Our Menu
 						</Button>
 						<Button
+							asLink
+							to="/contact"
 							variant="outline"
 							className="border-white text-white hover:bg-white hover:text-black px-8 py-4 rounded-full flex items-center gap-2 transition-all">
 							<Calendar size={20} />
-							Book a Table
+							Contact Us
 						</Button>
 					</motion.div>
 				</motion.div>

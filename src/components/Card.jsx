@@ -8,7 +8,9 @@ const Card = ({ children, className = "", hoverEffect = true, ...props }) => {
 			whileInView={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.6 }}
 			whileHover={
-				hoverEffect ? { y: -8, shadow: "0 20px 40px rgba(0,0,0,0.1)" } : {}
+				hoverEffect ?
+					{ y: -8, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }
+				:	{}
 			}
 			viewport={{ once: true }}
 			{...props}>

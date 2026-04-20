@@ -2,7 +2,7 @@ import { createContext, useContext, useReducer, useEffect } from "react";
 import { toast } from "sonner";
 import { api } from "../api";
 
-const AdminContext = createContext();
+const AdminContext = createContext(null);
 
 const adminReducer = (state, action) => {
 	switch (action.type) {
@@ -70,11 +70,13 @@ export const AdminProvider = ({ children }) => {
 
 	const updateOrderStatus = async (id, status) => {
 		try {
-			const updatedOrder = await api.updateOrderStatus(id, status);
+			await api.updateOrderStatus(id, status);
 			dispatch({ type: "UPDATE_ORDER_STATUS", payload: { id, status } });
 			toast.success(`Order ${id} status updated to ${status}`);
 		} catch (error) {
+			console.error("Failed to update order status:", error);
 			toast.error("Failed to update order status");
+			throw error;
 		}
 	};
 
@@ -83,8 +85,11 @@ export const AdminProvider = ({ children }) => {
 			const newOrder = await api.createOrder(order);
 			dispatch({ type: "ADD_ORDER", payload: newOrder });
 			toast.success("Order created successfully");
+			return newOrder;
 		} catch (error) {
+			console.error("Failed to create order:", error);
 			toast.error("Failed to create order");
+			throw error;
 		}
 	};
 

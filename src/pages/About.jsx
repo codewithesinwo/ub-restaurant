@@ -78,7 +78,7 @@ const About = () => {
             </Card>
 
             <div className="mt-8">
-              <Button size="lg" className="text-lg px-10">
+              <Button asLink to="/services" size="lg" className="text-lg px-10">
                 Explore the Full Menu
               </Button>
             </div>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Section from "../components/Section";
 import Card from "../components/Card";
 import { motion } from "framer-motion";
@@ -78,17 +78,15 @@ const Gallery = () => {
 		},
 	];
 
-	const filteredImages = useMemo(() => {
-		return images.filter((image) => {
-			const matchesCategory =
-				selectedCategory === "all" || image.category === selectedCategory;
-			const matchesSearch =
-				searchTerm === "" ||
-				image.alt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				image.title.toLowerCase().includes(searchTerm.toLowerCase());
-			return matchesCategory && matchesSearch;
-		});
-	}, [selectedCategory, searchTerm]);
+	const filteredImages = images.filter((image) => {
+		const matchesCategory =
+			selectedCategory === "all" || image.category === selectedCategory;
+		const matchesSearch =
+			searchTerm === "" ||
+			image.alt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			image.title.toLowerCase().includes(searchTerm.toLowerCase());
+		return matchesCategory && matchesSearch;
+	});
 
 	const clearSearch = () => setSearchTerm("");
 

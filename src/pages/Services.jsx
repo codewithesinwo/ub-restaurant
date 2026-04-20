@@ -1,12 +1,13 @@
-import Section from "../components/Section";
-import Card from "../components/Card";
-import Button from "../components/Button";
-import { ShoppingCart } from "lucide-react";
-import { motion } from "framer-motion";
-import { useCart } from "../contexts/CartContext";
-import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { ShoppingCart } from "lucide-react";
+import { toast } from "sonner";
 import { api } from "../api";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import Section from "../components/Section";
+import { formatCurrency } from "../components/utils";
+import { useCart } from "../contexts/CartContext";
 
 const Services = () => {
 	const { addItem } = useCart();
@@ -18,12 +19,11 @@ const Services = () => {
 			try {
 				setLoading(true);
 				const data = await api.getProducts();
-				console.log(data);
-
-				const menuItems = data.filter((p) => p.category === "product");
+				const filteredProducts = data.filter((product) => product.category === "product");
+				const menuItems = filteredProducts.length ? filteredProducts : data;
 				setProducts(menuItems);
-			} catch (err) {
-				console.error(err);
+			} catch (error) {
+				console.error(error);
 				toast.error("Failed to load menu items");
 			} finally {
 				setLoading(false);
@@ -70,7 +70,7 @@ const Services = () => {
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 					{products.map((item, index) => (
 						<motion.div
-							key={item._id || index}
+							key={item.id || item._id || item.title || index}
 							initial={{ opacity: 0, y: 30 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ delay: index * 0.07 }}>
@@ -82,7 +82,7 @@ const Services = () => {
 										className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 									/>
 									<div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-gray-900 px-4 py-1.5 rounded-full text-sm font-bold shadow-md">
-										₦{Number(item.price).toLocaleString()}
+										{formatCurrency(item.price)}
 									</div>
 								</div>
 

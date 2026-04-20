@@ -1,80 +1,88 @@
-// import { createContext, useContext, useState, useEffect } from "react";
-// import api from "../api";
+import { createContext, useContext, useMemo, useState } from "react";
+import api from "../api";
 
-// const AuthContext = createContext();
+const TOKEN_STORAGE_KEY = "token";
+const USER_STORAGE_KEY = "user";
 
-// export const useAuth = () => {
-// 	const context = useContext(AuthContext);
-// 	if (!context) {
-// 		throw new Error("useAuth must be used within an AuthProvider");
-// 	}
-// 	return context;
-// };
+const getStoredUser = () => {
+	const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+	const savedUser = localStorage.getItem(USER_STORAGE_KEY);
 
-// export const AuthProvider = ({ children }) => {
-// 	const [user, setUser] = useState(null);
-// 	const [loading, setLoading] = useState(true);
+	if (!token || !savedUser) {
+		return null;
+	}
 
-// 	useEffect(() => {
-// 		const token = localStorage.getItem("token");
-// 		const savedUser = localStorage.getItem("user");
+	try {
+		return JSON.parse(savedUser);
+	} catch (error) {
+		console.error("Failed to parse stored user:", error);
+		localStorage.removeItem(TOKEN_STORAGE_KEY);
+		localStorage.removeItem(USER_STORAGE_KEY);
+		return null;
+	}
+};
 
-// 		if (token && savedUser) {
-// 			try {
-// 				setUser(JSON.parse(savedUser));
-// 			} catch (error) {
-// 				console.error("Failed to parse stored user:", error);
-// 				localStorage.removeItem("token");
-// 				localStorage.removeItem("user");
-// 			}
-// 		}
-// 		setLoading(false);
-// 	}, []);
+const AuthContext = createContext(null);
 
-// 	const login = async (email, password) => {
-// 		try {
-// 			const data = await api.login({ email, password });
+export const useAuth = () => {
+	const context = useContext(AuthContext);
+	if (!context) {
+		throw new Error("useAuth must be used within an AuthProvider");
+	}
+	return context;
+};
 
-// 			localStorage.setItem("token", data.token);
-// 			localStorage.setItem("user", JSON.stringify(data.user));
-// 			setUser(data.user);
+export const AuthProvider = ({ children }) => {
+	const [user, setUser] = useState(getStoredUser);
+	const loading = false;
 
-// 			return data.user;
-// 		} catch (error) {
-// 			console.error("Login error:", error);
-// 			throw error;
-// 		}
-// 	};
+	const login = async (email, password) => {
+		try {
+			const data = await api.login({ email, password });
 
-// 	const logout = () => {
-// 		localStorage.removeItem("token");
-// 		localStorage.removeItem("user");
-// 		setUser(null);
-// 	};
+			localStorage.setItem(TOKEN_STORAGE_KEY, data.token);
+			localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
+			setUser(data.user);
 
-// 	const register = async (userData) => {
-// 		try {
-// 			const data = await api.register(userData);
+			return data.user;
+		} catch (error) {
+			console.error("Login error:", error);
+			throw error;
+		}
+	};
 
-// 			localStorage.setItem("token", data.token);
-// 			localStorage.setItem("user", JSON.stringify(data.user));
-// 			setUser(data.user);
+	const logout = () => {
+		localStorage.removeItem(TOKEN_STORAGE_KEY);
+		localStorage.removeItem(USER_STORAGE_KEY);
+		setUser(null);
+	};
 
-// 			return data.user;
-// 		} catch (error) {
-// 			console.error("Registration error:", error);
-// 			throw error;
-// 		}
-// 	};
+	const register = async (userData) => {
+		try {
+			const data = await api.register(userData);
 
-// 	const value = {
-// 		user,
-// 		loading,
-// 		login,
-// 		logout,
-// 		register,
-// 		isAuthenticated: !!user,
-// 	};
+			localStorage.setItem(TOKEN_STORAGE_KEY, data.token);
+			localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
+			setUser(data.user);
 
-// 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-// };
+			return data.user;
+		} catch (error) {
+			console.error("Registration error:", error);
+			throw error;
+		}
+	};
+
+	const value = useMemo(
+		() => ({
+			user,
+			loading,
+			login,
+			logout,
+			register,
+			isAuthenticated: !!user,
+		}),
+		[loading, user],
+	);
+
+	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};

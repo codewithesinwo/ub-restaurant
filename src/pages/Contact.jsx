@@ -2,7 +2,7 @@ import { useState } from "react";
 import Section from "../components/Section";
 import Card from "../components/Card";
 import Button from "../components/Button";
-import { Phone, Mail, MapPin, Send, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Send } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Contact = () => {

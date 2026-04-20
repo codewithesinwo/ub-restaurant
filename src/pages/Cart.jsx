@@ -1,96 +1,51 @@
 import { useState } from "react";
-import { useCart } from "../contexts/CartContext";
-import { useAdmin } from "../contexts/AdminContext";
+import { Popup } from "paystack-js";
 import { Link } from "react-router-dom";
-import CartItem from "../components/CartItem";
-import Button from "../components/Button";
 import {
 	ArrowLeft,
 	CreditCard,
-	Truck,
 	ShoppingCart,
 	Trash2,
+	Truck,
 } from "lucide-react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { api } from "../api";
-// import PaystackPop fr om "paystack-js";
+import Button from "../components/Button";
+import CartItem from "../components/CartItem";
+import { formatCurrency } from "../components/utils";
+import { useAdmin } from "../contexts/AdminContext";
+import { useCart } from "../contexts/CartContext";
+
+const EMAIL_PATTERN = /\S+@\S+\.\S+/;
+const PAYSTACK_PLACEHOLDER_KEY = "pk_test_your_paystack_public_key_here";
+
+const createOrderId = () => {
+	const reference = globalThis.crypto?.randomUUID?.();
+	return reference ? `order-${reference}` : "order-web-checkout";
+};
+
+const isPaymentVerified = (response) =>
+	Boolean(
+		response?.success ||
+			response?.status === "success" ||
+			response?.data?.status === "success" ||
+			response?.data?.status === true,
+	);
 
 const Cart = () => {
 	const { items, total, clearCart } = useCart();
 	const { addOrder } = useAdmin();
-
 	const [customerName, setCustomerName] = useState("");
 	const [customerEmail, setCustomerEmail] = useState("");
 	const [paymentMode, setPaymentMode] = useState("online");
 	const [isProcessing, setIsProcessing] = useState(false);
 
-	const handleCheckout = async () => {
-		if (items.length === 0) return;
-
-		if (!customerName.trim() || !customerEmail.trim()) {
-			toast.error("Please enter your full name and email address");
-			return;
-		}
-
-		if (!/\\S+@\\S+\\.\\S+/.test(customerEmail)) {
-			toast.error("Please enter a valid email address");
-			return;
-		}
-
-		setIsProcessing(true);
-
-		try {
-			if (paymentMode === "online") {
-				// Initialize Paystack payment
-				const timestamp = Date.now();
-				const paymentData = {
-					email: customerEmail,
-					amount: total,
-					orderId: `order-${Math.floor(timestamp / 1000)}`,
-				};
-
-				const response = await api.initializePayment(paymentData);
-
-				if (response.success) {
-					const paystack = new PaystackPop();
-					paystack.newTransaction({
-						key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
-						email: customerEmail,
-						amount: total * 100,
-						ref: response.data.reference,
-						onSuccess: async (transaction) => {
-							// Verify payment
-							try {
-								const verifyResponse = await api.verifyPayment(
-									transaction.reference,
-								);
-								if (verifyResponse.success) {
-									// Place order after successful payment
-									await placeOrder();
-								} else {
-									toast.error("Payment verification failed");
-								}
-							} catch (_) {
-								toast.error("Payment verification failed");
-							}
-						},
-						onCancel: () => {
-							toast.error("Payment cancelled");
-							setIsProcessing(false);
-						},
-					});
-				} else {
-					toast.error("Failed to initialize payment");
-					setIsProcessing(false);
-				}
-			} else {
-				// Cash on delivery
-				await placeOrder();
-			}
-		} catch (_) {
-			toast.error("Failed to process checkout. Please try again.");
-			setIsProcessing(false);
-		}
+	const resetCheckoutForm = () => {
+		clearCart();
+		setCustomerName("");
+		setCustomerEmail("");
+		setPaymentMode("online");
+		setIsProcessing(false);
 	};
 
 	const placeOrder = async () => {
@@ -100,9 +55,9 @@ const Cart = () => {
 			items: items.map((item) => ({
 				name: item.title || item.name,
 				qty: item.quantity || 1,
-				price: item.price,
+				price: Number(item.price) || 0,
 			})),
-			total,
+			total: Number(total) || 0,
 			paymentMode,
 			date: new Date().toISOString(),
 			deliveryMode: "delivery",
@@ -114,11 +69,96 @@ const Cart = () => {
 			description: "We will contact you shortly to confirm details.",
 		});
 
-		clearCart();
-		setCustomerName("");
-		setCustomerEmail("");
-		setPaymentMode("online");
-		setIsProcessing(false);
+		resetCheckoutForm();
+	};
+
+	const handleOnlineCheckout = async () => {
+		const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+
+		if (!paystackKey || paystackKey === PAYSTACK_PLACEHOLDER_KEY) {
+			toast.error("Paystack public key is not configured yet.");
+			setIsProcessing(false);
+			return;
+		}
+
+		const response = await api.initializePayment({
+			email: customerEmail.trim(),
+			amount: Number(total) || 0,
+			orderId: createOrderId(),
+		});
+
+		const reference =
+			response?.data?.reference ??
+			response?.reference ??
+			response?.data?.access_code ??
+			response?.access_code;
+
+		if (!reference) {
+			toast.error("Failed to initialize payment");
+			setIsProcessing(false);
+			return;
+		}
+
+		const popup = new Popup({
+			key: paystackKey,
+			email: customerEmail.trim(),
+			amount: Math.round((Number(total) || 0) * 100),
+			ref: reference,
+			callback: async (transaction) => {
+				try {
+					const verifyResponse = await api.verifyPayment(transaction.reference);
+
+					if (!isPaymentVerified(verifyResponse)) {
+						toast.error("Payment verification failed");
+						setIsProcessing(false);
+						return;
+					}
+
+					await placeOrder();
+				} catch (error) {
+					console.error("Payment verification failed:", error);
+					toast.error("Payment verification failed");
+					setIsProcessing(false);
+				}
+			},
+			onClose: () => {
+				toast.error("Payment cancelled");
+				setIsProcessing(false);
+			},
+		});
+
+		popup.open();
+	};
+
+	const handleCheckout = async () => {
+		if (items.length === 0) {
+			return;
+		}
+
+		if (!customerName.trim() || !customerEmail.trim()) {
+			toast.error("Please enter your full name and email address");
+			return;
+		}
+
+		if (!EMAIL_PATTERN.test(customerEmail.trim())) {
+			toast.error("Please enter a valid email address");
+			return;
+		}
+
+		setIsProcessing(true);
+
+		try {
+			if (paymentMode === "online") {
+				await handleOnlineCheckout();
+				return;
+			}
+
+			await placeOrder();
+		} catch (error) {
+			console.error("Checkout failed:", error);
+			toast.error("Failed to process checkout. Please try again.");
+			setIsProcessing(false);
+		}
 	};
 
 	if (items.length === 0) {
@@ -136,25 +176,20 @@ const Cart = () => {
 						Add meals to your order and checkout quickly.
 					</p>
 
-					<Link to="/">
-						<Button size="lg" className="px-12 py-4 text-lg">
-							Browse Menu
-						</Button>
-					</Link>
+					<Button asLink to="/services" size="lg" className="px-12 py-4 text-lg">
+						Browse Menu
+					</Button>
 				</div>
-				<Toaster />
 			</div>
 		);
 	}
 
 	return (
 		<div className="min-h-screen bg-gray-50 py-20 px-4">
-			{/* <Toaster position="top-center" richColors /> */}
-
 			<div className="max-w-6xl mx-auto">
 				<div className="flex items-center gap-4 mb-10">
 					<Link
-						to="/"
+						to="/services"
 						className="p-3 hover:bg-white rounded-2xl transition-colors">
 						<ArrowLeft className="w-6 h-6 text-gray-700" />
 					</Link>
@@ -169,9 +204,10 @@ const Cart = () => {
 				<div className="grid lg:grid-cols-12 gap-8">
 					<div className="lg:col-span-7 space-y-6">
 						{items.map((item, index) => (
-							<div key={item.id || index} className="">
-								<CartItem {...item} />
-							</div>
+							<CartItem
+								key={item.id || item._id || item.title || index}
+								{...item}
+							/>
 						))}
 					</div>
 
@@ -183,7 +219,7 @@ const Cart = () => {
 						<div className="space-y-4 mb-10">
 							<div className="flex justify-between text-lg">
 								<span className="text-gray-600">Subtotal</span>
-								<span className="font-semibold">₦{total.toLocaleString()}</span>
+								<span className="font-semibold">{formatCurrency(total)}</span>
 							</div>
 							<div className="flex justify-between text-lg">
 								<span className="text-gray-600">Delivery Fee</span>
@@ -191,9 +227,7 @@ const Cart = () => {
 							</div>
 							<div className="border-t pt-4 flex justify-between text-2xl font-bold">
 								<span>Total</span>
-								<span className="text-amber-600">
-									₦{total.toLocaleString()}
-								</span>
+								<span className="text-amber-600">{formatCurrency(total)}</span>
 							</div>
 						</div>
 
@@ -205,7 +239,7 @@ const Cart = () => {
 								<input
 									type="text"
 									value={customerName}
-									onChange={(e) => setCustomerName(e.target.value)}
+									onChange={(event) => setCustomerName(event.target.value)}
 									className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition-all"
 								/>
 							</div>
@@ -217,7 +251,7 @@ const Cart = () => {
 								<input
 									type="email"
 									value={customerEmail}
-									onChange={(e) => setCustomerEmail(e.target.value)}
+									onChange={(event) => setCustomerEmail(event.target.value)}
 									className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition-all"
 								/>
 							</div>
@@ -228,7 +262,7 @@ const Cart = () => {
 								</label>
 								<select
 									value={paymentMode}
-									onChange={(e) => setPaymentMode(e.target.value)}
+									onChange={(event) => setPaymentMode(event.target.value)}
 									className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition-all">
 									<option value="online">Pay Online</option>
 									<option value="cod">Cash on Delivery</option>
@@ -267,7 +301,7 @@ const Cart = () => {
 								<span>Free Delivery</span>
 							</div>
 							<div className="h-1 w-1 bg-gray-300 rounded-full" />
-							<span>Online + offline payment</span>
+							<span>Online and offline payment</span>
 						</div>
 					</div>
 				</div>

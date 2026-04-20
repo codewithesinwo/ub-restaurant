@@ -7,6 +7,42 @@ import {
 } from "react";
 
 const CartContext = createContext();
+const CART_STORAGE_KEY = "ubrestaurant-cart";
+
+const calculateTotal = (items) =>
+	items.reduce((sum, item) => {
+		return sum + (Number(item.price) || 0) * (Number(item.quantity) || 1);
+	}, 0);
+
+const normalizeCartItem = (product, quantity = 1) => {
+	if (!product) {
+		return null;
+	}
+
+	const id = product.id ?? product._id;
+
+	if (!id) {
+		return null;
+	}
+
+	const itemQuantity = Number(quantity) || 1;
+	const itemPrice = Number(product.price) || 0;
+	const name = product.name ?? product.title ?? "Menu Item";
+
+	return {
+		...product,
+		id,
+		name,
+		title: product.title ?? name,
+		price: itemPrice,
+		quantity: itemQuantity,
+	};
+};
+
+const withCalculatedTotal = (state) => ({
+	...state,
+	total: calculateTotal(state.items),
+});
 
 const initialState = {
 	items: [],
@@ -16,56 +52,64 @@ const initialState = {
 const cartReducer = (state, action) => {
 	switch (action.type) {
 		case "ADD_ITEM": {
-			const { payload } = action;
+			const payload = normalizeCartItem(
+				action.payload.product,
+				action.payload.quantity,
+			);
+
+			if (!payload) {
+				return state;
+			}
+
 			const existingItem = state.items.find((item) => item.id === payload.id);
 
 			if (existingItem) {
-				return {
+				return withCalculatedTotal({
 					...state,
 					items: state.items.map((item) =>
 						item.id === payload.id ?
 							{ ...item, quantity: item.quantity + payload.quantity }
 						:	item,
 					),
-				};
+				});
 			}
 
-			return {
+			return withCalculatedTotal({
 				...state,
-				items: [
-					...state.items,
-					{ ...payload, quantity: payload.quantity || 1 },
-				],
-			};
+				items: [...state.items, payload],
+			});
 		}
 
 		case "UPDATE_QUANTITY": {
 			const { id, quantity } = action.payload;
 			if (quantity < 1) {
-				return {
+				return withCalculatedTotal({
 					...state,
 					items: state.items.filter((item) => item.id !== id),
-				};
+				});
 			}
-			return {
+			return withCalculatedTotal({
 				...state,
 				items: state.items.map((item) =>
 					item.id === id ? { ...item, quantity } : item,
 				),
-			};
+			});
 		}
 
 		case "REMOVE_ITEM":
-			return {
+			return withCalculatedTotal({
 				...state,
 				items: state.items.filter((item) => item.id !== action.payload.id),
-			};
+			});
 
 		case "CLEAR_CART":
 			return initialState;
 
 		case "SET_CART":
-			return action.payload;
+			return withCalculatedTotal({
+				items: action.payload?.items ?? [],
+				total: action.payload?.total ?? 0,
+			});
 
 		default:
 			return state;
@@ -78,47 +122,35 @@ export const CartProvider = ({ children }) => {
 	// Load cart from localStorage on mount
 	useEffect(() => {
 		try {
-			const savedCart = localStorage.getItem("ubrestaurant-cart");
+			const savedCart = localStorage.getItem(CART_STORAGE_KEY);
 			if (savedCart) {
 				const parsedCart = JSON.parse(savedCart);
 				dispatch({ type: "SET_CART", payload: parsedCart });
 			}
 		} catch (error) {
 			console.error("Failed to load cart from localStorage:", error);
-			localStorage.removeItem("ubrestaurant-cart");
+			localStorage.removeItem(CART_STORAGE_KEY);
 		}
 	}, []);
 
-	// Calculate total and save to localStorage whenever items change
+	// Persist cart whenever it changes.
 	useEffect(() => {
-		const calculatedTotal = state.items.reduce((sum, item) => {
-			return sum + (Number(item.price) || 0) * (Number(item.quantity) || 1);
-		}, 0);
-
-		const updatedState = { ...state, total: calculatedTotal };
-
-		// Save to localStorage
 		try {
-			localStorage.setItem("ubrestaurant-cart", JSON.stringify(updatedState));
+			localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state));
 		} catch (error) {
 			console.error("Failed to save cart to localStorage:", error);
 		}
-
-		// Update state with new total (prevents infinite loop)
-		if (calculatedTotal !== state.total) {
-			dispatch({ type: "SET_CART", payload: updatedState });
-		}
-	}, [state.items]);
+	}, [state]);
 
 	// Memoized actions
 	const addItem = useCallback((product, quantity = 1) => {
-		if (!product?.id) {
-			console.error("Product must have an id");
+		if (!(product?.id ?? product?._id)) {
+			console.error("Product must have an id or _id");
 			return;
 		}
 		dispatch({
 			type: "ADD_ITEM",
-			payload: { ...product, quantity: Number(quantity) || 1 },
+			payload: { product, quantity: Number(quantity) || 1 },
 		});
 	}, []);
 
@@ -135,7 +167,7 @@ export const CartProvider = ({ children }) => {
 
 	const clearCart = useCallback(() => {
 		dispatch({ type: "CLEAR_CART" });
-		localStorage.removeItem("ubrestaurant-cart");
+		localStorage.removeItem(CART_STORAGE_KEY);
 	}, []);
 
 	const value = {

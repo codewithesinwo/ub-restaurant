@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { DollarSign, Package, Users, TrendingUp } from "lucide-react";
 
 const SummaryCard = ({ title, value, change, icon: Icon, trend = "up" }) => {
 	return (

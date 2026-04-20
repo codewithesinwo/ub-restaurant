@@ -1,10 +1,12 @@
 import Button from "./Button";
-import { Minus, Plus, Trash2, ShoppingCart } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "../contexts/CartContext";
+import { formatCurrency } from "./utils";
 
-const CartItem = ({ id, name, price, image, quantity }) => {
+const CartItem = ({ id, name, title, price, image, quantity }) => {
 	const { updateQuantity, removeItem } = useCart();
+	const itemName = title || name;
 
 	const total = price * quantity;
 
@@ -14,16 +16,18 @@ const CartItem = ({ id, name, price, image, quantity }) => {
 			className="flex gap-4 p-6 border rounded-2xl bg-white shadow-sm hover:shadow-md transition-all">
 			<img
 				src={image}
-				alt={name}
+				alt={itemName}
 				className="w-24 h-24 object-cover rounded-xl flex-shrink-0"
 			/>
 			<div className="flex-1 min-w-0">
 				<h3 className="font-bold text-lg text-gray-900 mb-2 truncate">
-					{name}
+					{itemName}
 				</h3>
-				<p className="text-2xl font-bold text-amber-600">${total.toFixed(2)}</p>
+				<p className="text-2xl font-bold text-amber-600">
+					{formatCurrency(total)}
+				</p>
 				<p className="text-sm text-gray-500">
-					Price: ${price.toFixed(2)} x {quantity}
+					Price: {formatCurrency(price)} x {quantity}
 				</p>
 			</div>
 			<div className="flex items-center gap-2 self-start">

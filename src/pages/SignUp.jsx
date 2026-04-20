@@ -1,13 +1,39 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import Card from "../components/Card";
 import Button from "../components/Button";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function SignUp() {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
+	const [loading, setLoading] = useState(false);
+	const { register } = useAuth();
+	const navigate = useNavigate();
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		if (password !== confirmPassword) {
+			toast.error("Passwords do not match");
+			return;
+		}
+
+		setLoading(true);
+
+		try {
+			await register({ name, email, password });
+			toast.success("Account created successfully!");
+			navigate("/");
+		} catch (error) {
+			toast.error(error.message || "Registration failed");
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	return (
 		<main className="min-h-[calc(100vh-220px)] flex items-center justify-center py-16 px-4">
@@ -21,7 +47,7 @@ export default function SignUp() {
 					</p>
 				</div>
 
-				<form className="space-y-6">
+				<form className="space-y-6" onSubmit={handleSubmit}>
 					<div>
 						<label
 							htmlFor="name"
@@ -86,8 +112,11 @@ export default function SignUp() {
 						/>
 					</div>
 
-					<Button type="submit" className="w-full cursor-pointer">
-						Create account
+					<Button
+						type="submit"
+						className="w-full cursor-pointer"
+						disabled={loading}>
+						{loading ? "Creating Account..." : "Create account"}
 					</Button>
 				</form>
 
