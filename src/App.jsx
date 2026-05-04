@@ -11,6 +11,8 @@ import { AdminProvider } from "./contexts/AdminContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import CookieMessage from "./components/CookieMessage";
+import WhatsappIcon from "./components/WhatsappIcon";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Services from "./pages/Services";
@@ -74,6 +76,8 @@ function AppContent() {
 			</div>
 			<Footer />
 			<Toaster richColors position="top-right" />
+			<CookieMessage />
+			<WhatsappIcon />
 		</>
 	);
 }

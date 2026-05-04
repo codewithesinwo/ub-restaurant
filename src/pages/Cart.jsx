@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Popup } from "paystack-js";
 import { Link } from "react-router-dom";
 import {
@@ -15,6 +15,7 @@ import CartItem from "../components/CartItem";
 import { formatCurrency } from "../components/utils";
 import { useAdmin } from "../contexts/AdminContext";
 import { useCart } from "../contexts/CartContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const EMAIL_PATTERN = /\S+@\S+\.\S+/;
 const PAYSTACK_PLACEHOLDER_KEY = "pk_test_your_paystack_public_key_here";
@@ -27,23 +28,38 @@ const createOrderId = () => {
 const isPaymentVerified = (response) =>
 	Boolean(
 		response?.success ||
-			response?.status === "success" ||
-			response?.data?.status === "success" ||
-			response?.data?.status === true,
+		response?.status === "success" ||
+		response?.data?.status === "success" ||
+		response?.data?.status === true,
 	);
 
 const Cart = () => {
 	const { items, total, clearCart } = useCart();
 	const { addOrder } = useAdmin();
+	const { user, isAuthenticated } = useAuth();
 	const [customerName, setCustomerName] = useState("");
 	const [customerEmail, setCustomerEmail] = useState("");
+	const [customerPhone, setCustomerPhone] = useState("");
+	const [customerPhoneSecondary, setCustomerPhoneSecondary] = useState("");
 	const [paymentMode, setPaymentMode] = useState("online");
 	const [isProcessing, setIsProcessing] = useState(false);
+
+	// Pre-fill user data when logged in
+	useEffect(() => {
+		if (isAuthenticated && user) {
+			setCustomerName(user.fullName || "");
+			setCustomerEmail(user.email || "");
+			setCustomerPhone(user.phone || "");
+			setCustomerPhoneSecondary(user.phoneSecondary || "");
+		}
+	}, [isAuthenticated, user]);
 
 	const resetCheckoutForm = () => {
 		clearCart();
 		setCustomerName("");
 		setCustomerEmail("");
+		setCustomerPhone("");
+		setCustomerPhoneSecondary("");
 		setPaymentMode("online");
 		setIsProcessing(false);
 	};
@@ -52,9 +68,11 @@ const Cart = () => {
 		const newOrderData = {
 			customerName: customerName.trim(),
 			customerEmail: customerEmail.trim(),
+			customerPhone: customerPhone.trim(),
+			customerPhoneSecondary: customerPhoneSecondary.trim(),
 			items: items.map((item) => ({
-				name: item.title || item.name,
-				qty: item.quantity || 1,
+				productId: item.id || item._id,
+				quantity: item.quantity || 1,
 				price: Number(item.price) || 0,
 			})),
 			total: Number(total) || 0,
@@ -135,13 +153,27 @@ const Cart = () => {
 			return;
 		}
 
-		if (!customerName.trim() || !customerEmail.trim()) {
-			toast.error("Please enter your full name and email address");
+		// Skip name/email validation for authenticated users
+		if (!isAuthenticated) {
+			if (!customerName.trim() || !customerEmail.trim()) {
+				toast.error("Please enter your full name and email address");
+				return;
+			}
+
+			if (!EMAIL_PATTERN.test(customerEmail.trim())) {
+				toast.error("Please enter a valid email address");
+				return;
+			}
+		}
+
+		// Validate phone numbers for all users
+		if (!customerPhone.trim()) {
+			toast.error("Please enter your primary phone number");
 			return;
 		}
 
-		if (!EMAIL_PATTERN.test(customerEmail.trim())) {
-			toast.error("Please enter a valid email address");
+		if (!customerPhoneSecondary.trim()) {
+			toast.error("Please enter your secondary phone number");
 			return;
 		}
 
@@ -176,7 +208,11 @@ const Cart = () => {
 						Add meals to your order and checkout quickly.
 					</p>
 
-					<Button asLink to="/services" size="lg" className="px-12 py-4 text-lg">
+					<Button
+						asLink
+						to="/services"
+						size="lg"
+						className="px-12 py-4 text-lg">
 						Browse Menu
 					</Button>
 				</div>
@@ -232,26 +268,76 @@ const Cart = () => {
 						</div>
 
 						<div className="space-y-6 mb-8">
+							{!isAuthenticated && (
+								<>
+									<div>
+										<label className="block text-sm font-semibold text-gray-700 mb-2">
+											Full Name <span className="text-red-500">*</span>
+										</label>
+										<input
+											type="text"
+											value={customerName}
+											onChange={(event) => setCustomerName(event.target.value)}
+											className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition-all"
+										/>
+									</div>
+
+									<div>
+										<label className="block text-sm font-semibold text-gray-700 mb-2">
+											Email Address <span className="text-red-500">*</span>
+										</label>
+										<input
+											type="email"
+											value={customerEmail}
+											onChange={(event) => setCustomerEmail(event.target.value)}
+											className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition-all"
+										/>
+									</div>
+								</>
+							)}
+
+							{isAuthenticated && (
+								<div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4">
+									<div className="flex items-center gap-3">
+										<div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+											<span className="text-green-600 font-semibold text-sm">
+												✓
+											</span>
+										</div>
+										<div>
+											<p className="font-medium text-green-800">
+												{user?.fullName}
+											</p>
+											<p className="text-sm text-green-600">{user?.email}</p>
+										</div>
+									</div>
+								</div>
+							)}
+
 							<div>
 								<label className="block text-sm font-semibold text-gray-700 mb-2">
-									Full Name <span className="text-red-500">*</span>
+									Primary Phone Number <span className="text-red-500">*</span>
 								</label>
 								<input
-									type="text"
-									value={customerName}
-									onChange={(event) => setCustomerName(event.target.value)}
+									type="tel"
+									value={customerPhone}
+									onChange={(event) => setCustomerPhone(event.target.value)}
+									placeholder="+234 or 0801..."
 									className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition-all"
 								/>
 							</div>
 
 							<div>
 								<label className="block text-sm font-semibold text-gray-700 mb-2">
-									Email Address <span className="text-red-500">*</span>
+									Secondary Phone Number <span className="text-red-500">*</span>
 								</label>
 								<input
-									type="email"
-									value={customerEmail}
-									onChange={(event) => setCustomerEmail(event.target.value)}
+									type="tel"
+									value={customerPhoneSecondary}
+									onChange={(event) =>
+										setCustomerPhoneSecondary(event.target.value)
+									}
+									placeholder="Backup number for delivery"
 									className="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition-all"
 								/>
 							</div>

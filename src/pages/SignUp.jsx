@@ -25,7 +25,7 @@ export default function SignUp() {
 		setLoading(true);
 
 		try {
-			await register({ name, email, password });
+			await register({ fullName: name, email, password });
 			toast.success("Account created successfully!");
 			navigate("/");
 		} catch (error) {

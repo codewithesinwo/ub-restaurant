@@ -19,7 +19,9 @@ const Services = () => {
 			try {
 				setLoading(true);
 				const data = await api.getProducts();
-				const filteredProducts = data.filter((product) => product.category === "product");
+				const filteredProducts = data.filter(
+					(product) => product.category === "product",
+				);
 				const menuItems = filteredProducts.length ? filteredProducts : data;
 				setProducts(menuItems);
 			} catch (error) {
@@ -50,7 +52,7 @@ const Services = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-50">
-			<Section className="bg-gradient-to-br from-gray-900 to-amber-950 text-white">
+			<Section className="bg-amber-950 text-white">
 				<motion.div
 					className="text-center max-w-4xl mx-auto"
 					initial={{ opacity: 0, y: 30 }}

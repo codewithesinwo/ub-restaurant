@@ -16,37 +16,37 @@ const Home = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
+	// Proudly Nigerian-Owned Highlights
 	const highlights = [
 		{
-			image:
-				"https://images.unsplash.com/photo-1600585154340-be6161a56a9c?w=800",
+			image: "/FreshlyPrepared.png",
 			title: "Freshly Prepared",
-			description: "Meals cooked daily with premium ingredients",
+			description: "Cooked fresh daily with premium local ingredients",
 		},
 		{
-			image:
-				"https://images.unsplash.com/photo-1565299623644-5f8a6e6e8b0a?w=800",
+			image: "/DeliveryMan.png",
 			title: "Fast Delivery",
-			description: "Hot and fresh delivery to your doorstep",
+			description: "Reliable same-day delivery across Lagos",
 		},
 		{
-			image:
-				"https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800",
+			image: "/AuthenticFlavors.png",
 			title: "Authentic Flavors",
-			description: "Taste of home in every bite",
+			description:
+				"100% Nigerian Owned • Rich local spices & authentic home-style cooking",
 		},
 	];
 
+	// More relatable Nigerian testimonials
 	const testimonials = [
 		{
 			quote:
-				"The jollof rice and chicken tasted exactly like my mom's! Super fresh and delivered hot.",
+				"The jollof rice and chicken tasted exactly like my mother’s! So fresh and delivered hot. Thank you UB!",
 			author: "Aisha Bello",
-			location: "Lekki Phase 1",
+			location: "Lekki Phase 1, Lagos",
 		},
 		{
 			quote:
-				"Best pepper soup and pounded yam I've had delivered. UB Restaurants is now my go-to!",
+				"Best pounded yam and egusi soup I’ve had delivered in Lagos. UB Restaurant is now my family’s go-to!",
 			author: "Chinedu Okoro",
 			location: "Ikoyi, Lagos",
 		},
@@ -57,7 +57,9 @@ const Home = () => {
 			try {
 				setLoading(true);
 				const data = await api.getProducts();
-				const menuItems = data.filter((product) => product.category === "product");
+				const menuItems = data.filter(
+					(product) => product.category === "product",
+				);
 				const homeProducts = (menuItems.length ? menuItems : data).slice(0, 4);
 				setProducts(homeProducts);
 			} catch {
@@ -88,13 +90,14 @@ const Home = () => {
 		<div>
 			<Hero />
 
+			{/* Highlights Section */}
 			<Section className="py-20 bg-white">
 				<motion.div className="text-center mb-16">
 					<h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-						Why People Love Ordering From Us
+						Why People Love UB Restaurant
 					</h2>
 					<p className="text-xl text-gray-600">
-						Restaurant-quality meals delivered fresh to your home
+						Proudly Nigerian-owned • Serving authentic local flavors
 					</p>
 				</motion.div>
 
@@ -129,13 +132,14 @@ const Home = () => {
 				</div>
 			</Section>
 
+			{/* Popular Meals */}
 			<Section className="from-amber-50 to-white py-20">
 				<div className="text-center mb-16">
 					<h3 className="text-4xl font-bold text-gray-900 mb-4">
 						Popular Meals This Week
 					</h3>
 					<p className="text-lg text-gray-600">
-						Chef-prepared | Fresh ingredients | Fast delivery
+						Chef-prepared • Fresh ingredients • Naija flavors
 					</p>
 				</div>
 
@@ -184,10 +188,11 @@ const Home = () => {
 				</div>
 			</Section>
 
+			{/* Testimonials */}
 			<Section id="testimonials" className="py-20 bg-white">
 				<motion.div className="text-center mb-16">
 					<h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-						Happy Customers, Delicious Meals
+						Happy Customers, Real Naija Taste
 					</h2>
 				</motion.div>
 
@@ -221,16 +226,17 @@ const Home = () => {
 				</div>
 			</Section>
 
+			{/* CTA Section */}
 			<Section className="bg-gradient-to-br from-gray-900 to-black text-white py-24">
 				<div className="text-center max-w-3xl mx-auto">
 					<motion.h2
 						className="text-4xl md:text-6xl font-bold mb-6"
 						initial={{ opacity: 0, y: 20 }}
 						whileInView={{ opacity: 1, y: 0 }}>
-						Craving Something Delicious?
+						Craving Real Naija Food?
 					</motion.h2>
 					<p className="text-xl text-gray-300 mb-10">
-						Order now and get it delivered hot and fresh
+						Order now and enjoy hot, authentic Nigerian meals delivered fast
 					</p>
 					<Button
 						size="lg"
@@ -238,7 +244,7 @@ const Home = () => {
 						className="text-xl px-14 py-7"
 						asLink
 						to="/services">
-						Browse Menu and Order Now
+						Browse Menu & Order Now
 					</Button>
 				</div>
 			</Section>
