@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "../api";
-import Button from "../components/Button";
 import Card from "../components/Card";
 import Section from "../components/Section";
 import { formatCurrency } from "../components/utils";
@@ -76,13 +75,14 @@ const Services = () => {
 							initial={{ opacity: 0, y: 30 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ delay: index * 0.07 }}>
-							<Card className="group h-full overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100">
+							<Card className="group h-full overflow-hidden hover:shadow-2xl transition-all duration-500 border-2 border-gray-200">
 								<div className="relative h-64 overflow-hidden">
 									<img
 										src={item.image}
 										alt={item.title}
 										className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 									/>
+									{/* <div className="absolute top-4 right-4 backdrop-blur-sm text-gray-900 px-4 py-1.5 rounded-full text-sm font-bold shadow-md"> */}
 									<div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-gray-900 px-4 py-1.5 rounded-full text-sm font-bold shadow-md">
 										{formatCurrency(item.price)}
 									</div>
@@ -95,13 +95,12 @@ const Services = () => {
 									<p className="text-gray-600 mb-6 min-h-[72px]">
 										{item.description || "Delicious meal from our chef."}
 									</p>
-									<Button
-										variant="primary"
-										className="w-full flex items-center justify-center gap-2"
+									<button
+										className="w-full flex items-center justify-center gap-2 p-3 rounded-2xl bg-black text-white hover:bg-gray-900"
 										onClick={() => handleAddToCart(item)}>
 										<ShoppingCart className="w-4 h-4" />
 										Add to Cart
-									</Button>
+									</button>
 								</div>
 							</Card>
 						</motion.div>
