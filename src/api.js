@@ -1,4 +1,7 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_BASE =
+	import.meta.env.VITE_API_URL ||
+	import.meta.env.VITE_API_URL_LOCAL ||
+	"http://localhost:5000";
 
 const unwrapPayload = (result, fallbackKeys = []) => {
 	if (result == null) {
@@ -89,8 +92,7 @@ export const api = {
 
 	// Orders
 	getOrders: async () => unwrapArray(await apiCall("/orders"), ["orders"]), // Admin - all orders
-	getMyOrders: async () =>
-		unwrapArray(await apiCall("/orders/my"), ["orders"]), // User - their own orders
+	getMyOrders: async () => unwrapArray(await apiCall("/orders/my"), ["orders"]), // User - their own orders
 	createOrder: async (orderData) =>
 		unwrapPayload(
 			await apiCall("/orders", {
