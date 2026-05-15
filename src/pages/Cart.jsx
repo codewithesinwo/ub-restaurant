@@ -366,7 +366,9 @@ const Cart = () => {
 									"Placing Order..."
 								:	<>
 										<CreditCard className="w-5 h-5" />
-										Place Order
+										{paymentMode === "cod" ?
+											"Place Order"
+										:	"Place Order and Checkout"}
 									</>
 								}
 							</Button>
